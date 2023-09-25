@@ -286,27 +286,12 @@
     // Override getContext function with "webgl-2d" enabled version
     canvas.getContext = (function(gl2d) {
       return function(context) {
-        if ((gl2d.options.force || context === "webgl-2d") && !(canvas.width === 0 || canvas.height === 0)) {
+        if (true) {
           if (gl2d.gl) { return gl2d.gl; }
+          if (canvas.width < 1) { canvas.width = 1; }
+          if (canvas.height < 1) { canvas.height = 1; }
 
-          var gl = gl2d.gl = gl2d.canvas.$getContext("webgl");
-
-          while (!gl) {
-            var newCanvas = document.createElement("canvas");
-            canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
-            canvas.parentNode.removeChild(canvas);
-            newCanvas.id = "canvas";
-            deCanvas(newCanvas, gl2d);
-            gl = gl2d.gl = newCanvas.$getContext("webgl");
-            if (gl) {
-              canvas = gl.canvas;
-              gl2d.instance = [];
-              gl2d.postInit();
-            }
-            else {
-              canvas = newCanvas;
-            }
-          }
+          var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
 
           const iPhone = /iPhone/i.test(navigator.userAgent);
           const iPad = /iPad/i.test(navigator.userAgent);
@@ -316,14 +301,16 @@
             loseContextApi = gl.getExtension("WEBGL_lose_context");
           }
 
-          function handleContextLost(event) {
+          const handleContextLost = function(event) {
             event.preventDefault();
             lostContext = true;
             console.warn("Webgl context lost.");
           }
         
-          function handleContextRestored(event) {
+          const handleContextRestored = function(event) {
             if (!canvas.gl2d) { return; }
+            if (canvas.width < 1) { canvas.width = 1; }
+            if (canvas.height < 1) { canvas.height = 1; }
         
             const {gl2d} = canvas;
             gl2d.shaderPool = [];
@@ -348,10 +335,8 @@
             console.warn("Webgl context restored.");
           }
 
-          if (true) {
-            canvas.addEventListener("webglcontextlost", handleContextLost, false);
-            canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
-          }
+          canvas.addEventListener("webglcontextlost", handleContextLost, false);
+          canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
           gl2d.initShaders();
           gl2d.initBuffers();
@@ -371,8 +356,6 @@
           lostContext = false;
 
           return gl;
-        } else {
-          return gl2d.canvas.$getContext(context);
         }
       };
     }(gl2d));
@@ -390,8 +373,6 @@
     this.maxTextureSize = undefined;
 
     deCanvas(canvas, this);
-
-    this.postInit();
   };
 
   // Enables WebGL2D on your canvas
@@ -605,13 +586,6 @@
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, rectVerts, gl.STATIC_DRAW);
-  };
-
-  // Maintains an array of all WebGL2D instances
-  WebGL2D.instances = [];
-
-  WebGL2D.prototype.postInit = function() {
-    WebGL2D.instances.push(this);
   };
 
   // Extends gl context with Canvas2D API
