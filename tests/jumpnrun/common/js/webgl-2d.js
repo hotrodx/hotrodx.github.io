@@ -293,11 +293,9 @@
 
           var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
 
-          if (gl.isContextLost()) {
-            console.warn("Webgl initialized in lost state.");
-            var ext = gl.getExtension("WEBGL_lose_context");
-            ext.restoreContext();
-          }
+          console.warn("Webgl initialized in lost state.");
+          var ext = gl.getExtension("WEBGL_lose_context");
+          ext.restoreContext();
 
           const iPhone = /iPhone/i.test(navigator.userAgent);
           const iPad = /iPad/i.test(navigator.userAgent);
