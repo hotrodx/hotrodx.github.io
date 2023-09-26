@@ -307,11 +307,13 @@
             loseContextApi = gl.getExtension("WEBGL_lose_context");
           }
 
+          console.log("Webgl 1");
           const handleContextLost = function(event) {
             event.preventDefault();
             lostContext = true;
             console.warn("Webgl context lost.");
           }
+          console.log("Webgl 2");
         
           const handleContextRestored = function(event) {
             if (!canvas.gl2d) { return; }
@@ -341,8 +343,12 @@
             console.warn("Webgl context restored.");
           }
 
+          console.log("Webgl 3");
+
           canvas.addEventListener("webglcontextlost", handleContextLost, false);
           canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+
+          console.log("Webgl 4");
 
           gl2d.initShaders();
           gl2d.initBuffers();
@@ -360,6 +366,8 @@
           gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
 
           lostContext = false;
+
+          console.log("Webgl 5");
 
           return gl;
         }
