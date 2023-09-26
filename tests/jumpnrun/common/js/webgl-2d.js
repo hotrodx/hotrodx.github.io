@@ -293,7 +293,7 @@
 
           var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
 
-          console.warn("Webgl initialized in lost state.");
+          console.log("Webgl initialized in lost state.");
           var ext = gl.getExtension("WEBGL_lose_context");
           ext.restoreContext();
 
