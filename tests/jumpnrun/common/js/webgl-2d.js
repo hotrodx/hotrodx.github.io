@@ -267,42 +267,26 @@
       if (canvas.height < 1) { canvas.height = 1; }
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
-      var retries = 0;
       if (gl && gl.isContextLost()) {
+        var retries = 0;
         console.log("Context already lost from the onset. Trying to recreate.");
-      }
-
-      while (gl && gl.isContextLost() && retries < 1000) {
-        gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
-        ++retries;
-      }
-
-      if (!gl) {
-        var test = gl2d.canvas.$getContext("2d");
-        if (test) {
-          console.log("canvas was pre-initialized as Canvas2D.");
-          retries = 0;
-          while (!gl && retries < 1000) {
-            var newCanvas = document.createElement("canvas");
-            canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
-            canvas.parentNode.removeChild(canvas);
-            newCanvas.id = "canvas";
-            deCanvas(newCanvas, gl2d);
-            gl = gl2d.gl = newCanvas.$getContext("webgl2") || newCanvas.$getContext("webgl");
-            if (gl) {
-              canvas = gl.canvas;
-            }
-            else {
-              canvas = newCanvas;
-            }
-            ++retries;
-          }
+        while (gl && gl.isContextLost() && retries < 1000) {
+          var newCanvas = document.createElement("canvas");
+          canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
+          canvas.parentNode.removeChild(canvas);
+          newCanvas.width = canvas.width;
+          newCanvas.height = canvas.height;
+          newCanvas.id = "canvas";
+          deCanvas(newCanvas, gl2d);
+          gl = gl2d.gl = newCanvas.$getContext("webgl2") || newCanvas.$getContext("webgl");
+          canvas = gl.canvas;
+          ++retries;
         }
       }
 
-      if (!gl) {
-        console.log("Fatal error. Cannot create WebGL.");
-        throw new Error("Fatal error. Cannot create WebGL.");
+      if (gl && gl.isContextLost()) {
+        console.log("Could not recreate WebGL.");
+        throw new Error("Could not recreate WebGL.");
       }
 
       const iPhone = /iPhone/i.test(navigator.userAgent);
