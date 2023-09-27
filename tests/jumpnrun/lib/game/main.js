@@ -36,6 +36,7 @@ MyGame = ig.Game.extend({
 	heartEmpty: new ig.Image( 'media/heart-empty.png' ),
 	coinIcon: new ig.Image( 'media/coin.png' ),
 	sky: new ig.Image( "media/sky.jpg" ),
+	grain: new ig.Image( "media/grain.jpg" ),
 	
 	
 	init: function() {
@@ -101,8 +102,9 @@ MyGame = ig.Game.extend({
 		this.parent();
 		
 
-		ig.system.context.globalAlpha = 0.5;
+		ig.system.context.globalAlpha = 0.1;
 		this.sky.draw(0, 0);
+		this.grain.draw(0, 0);
 		ig.system.context.globalAlpha = 1;
 
 		// Draw the heart and number of coins in the upper left corner.
@@ -153,6 +155,8 @@ MyTitle = ig.Game.extend({
 	// Load a font
 	font: new ig.Font( 'media/fredoka-one.font.png' ),
 	sky: new ig.Image( "media/sky.jpg" ),
+	grain: new ig.Image( "media/grain.jpg" ),
+
 
 	init: function() {
 		// Bind keys
@@ -204,9 +208,9 @@ MyTitle = ig.Game.extend({
 	draw: function() {
 		this.parent();
 		
-		ig.system.context.globalAlpha = 0.5;
+		ig.system.context.globalAlpha = 0.1;
 		this.sky.draw(0, 0);
-
+		this.grain.draw(0, 0);
 		ig.system.context.globalAlpha = 1;
 
 		var cx = ig.system.width/2;
