@@ -37,16 +37,11 @@
  */
 
 (function(Math, undefined) {
-
-  // Vector & Matrix libraries from CubicVR.js
-  var M_PI = 3.1415926535897932384626433832795028841968;
-  var M_TWO_PI = 2.0 * M_PI;
-  var M_HALF_PI = M_PI / 2.0;
   var mtxCanvas = document.createElement('canvas');
   var mtxCtx = mtxCanvas.getContext('2d');
-  var lostContext = true;
   var imageCache = [];
   var textureCache = [];
+  var lostContext = true;
   var loseContextApi = undefined;
 
   function isPOT(value) {
@@ -210,12 +205,6 @@
     translateMatrix[7] = y;
 
     mat3.multiply(translateMatrix, this.m_stack[this.c_stack]);
-
-    /*
-    if (this.valid === this.c_stack && this.c_stack) {
-      this.valid--;
-    }
-    */
   };
 
   var scaleMatrix = Transform.prototype.getIdentity();
@@ -225,12 +214,6 @@
     scaleMatrix[4] = y;
 
     mat3.multiply(scaleMatrix, this.m_stack[this.c_stack]);
-
-    /*
-    if (this.valid === this.c_stack && this.c_stack) {
-      this.valid--;
-    }
-    */
   };
 
   var rotateMatrix = Transform.prototype.getIdentity();
@@ -247,12 +230,6 @@
     rotateMatrix[4] = cAng;
 
     mat3.multiply(rotateMatrix, this.m_stack[this.c_stack]);
-
-    /*
-    if (this.valid === this.c_stack && this.c_stack) {
-      this.valid--;
-    }
-    */
   };
 
   function deCanvas(canvas, gl2d) {
@@ -284,86 +261,82 @@
     });
 
     // Override getContext function with "webgl-2d" enabled version
-    canvas.getContext = (function(gl2d) {
-      return function(context) {
-        if (true) {
-          if (gl2d.gl) { return gl2d.gl; }
-          if (canvas.width < 1) { canvas.width = 1; }
-          if (canvas.height < 1) { canvas.height = 1; }
+    canvas.getContext = function(_) {
+      if (gl2d.gl) { return gl2d.gl; }
+      if (canvas.width < 1) { canvas.width = 1; }
+      if (canvas.height < 1) { canvas.height = 1; }
 
-          var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
+      var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
 
-          const iPhone = /iPhone/i.test(navigator.userAgent);
-          const iPad = /iPad/i.test(navigator.userAgent);
-          const iOS = iPhone || iPad;
+      const iPhone = /iPhone/i.test(navigator.userAgent);
+      const iPad = /iPad/i.test(navigator.userAgent);
+      const iOS = iPhone || iPad;
+      const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent);
 
-          if (!iOS) {
-            loseContextApi = gl.getExtension("WEBGL_lose_context");
-          }
+      if (!iOS) {
+        loseContextApi = gl.getExtension("WEBGL_lose_context");
+      }
 
-          const handleContextLost = function(event) {
-            event.preventDefault();
-            lostContext = true;
-            console.warn("Webgl context lost.");
-          }
-        
-          const handleContextRestored = function(event) {
-            if (!canvas.gl2d) { return; }
-            if (canvas.width < 1) { canvas.width = 1; }
-            if (canvas.height < 1) { canvas.height = 1; }
-        
-            const {gl2d} = canvas;
-            gl2d.shaderPool = [];
-            gl2d.initShaders();
-            gl2d.initBuffers();
-            const {gl} = gl2d;
-        
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-            gl.clearColor(1, 1, 1, 0);
-            gl.colorMask(1,1,1,1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-        
-            gl.enable(gl.BLEND);
-            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-            gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-            
-            imageCache = [];
-            textureCache = [];
-        
-            lostContext = false;
-            console.warn("Webgl context restored.");
-          }
-
-          canvas.addEventListener("webglcontextlost", handleContextLost, false);
-          canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
-
-          gl2d.initShaders();
-          gl2d.initBuffers();
-
-          gl2d.initCanvas2DAPI();
-
-          gl.viewport(0, 0, gl2d.canvas.width, gl2d.canvas.height);
-          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-          gl.clearColor(1, 1, 1, 0);
-          gl.colorMask(1,1,1,1);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-
-          gl.enable(gl.BLEND);
-          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-          gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-
-          lostContext = false;
-
-          return gl;
-        }
+      var handleContextLost = function(event) {
+        event.preventDefault();
+        console.warn("Webgl context lost.");
+        lostContext = true;
       };
-    }(gl2d));
+    
+      var handleContextRestored = function(event) {
+        console.warn("Webgl context restoring...");
+        if (!canvas.gl2d) { return; }
+        if (canvas.width < 1) { canvas.width = 1; }
+        if (canvas.height < 1) { canvas.height = 1; }
+    
+        gl2d.shaderPool = [];
+        gl2d.initShaders();
+        gl2d.initBuffers();
+        const {gl} = gl2d;
+    
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+        gl.clearColor(1, 1, 1, 0);
+        gl.colorMask(1,1,1,1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+    
+        gl.enable(gl.BLEND);
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+        
+        imageCache = [];
+        textureCache = [];
+        lostContext = false;
+
+        console.warn("Webgl context restored.");
+      };
+
+      canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+
+      gl2d.initShaders();
+      gl2d.initBuffers();
+
+      gl2d.initCanvas2DAPI();
+
+      gl.viewport(0, 0, gl2d.canvas.width, gl2d.canvas.height);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      gl.clearColor(1, 1, 1, 0);
+      gl.colorMask(1,1,1,1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      gl.enable(gl.BLEND);
+      gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+
+      lostContext = false;
+
+      return gl;
+    };
   }
 
-  var WebGL2D = this.WebGL2D = function WebGL2D(canvas, options) {
+  var WebGL2D = this.WebGL2D = function WebGL2D(canvas) {
     this.canvas         = canvas;
-    this.options        = options || {};
     this.gl             = undefined;
     this.fs             = undefined;
     this.vs             = undefined;
@@ -376,17 +349,17 @@
   };
 
   // Enables WebGL2D on your canvas
-  WebGL2D.enable = function(canvas, options) {
-    return canvas.gl2d || new WebGL2D(canvas, options);
+  WebGL2D.enable = function(canvas) {
+    return canvas.gl2d || new WebGL2D(canvas);
   };
 
   WebGL2D._loseContext = function() {
     loseContextApi?.loseContext();
-  }
+  };
 
   WebGL2D._restoreContext = function() {
     loseContextApi?.restoreContext();
-  }
+  };
 
 
   // Shader Pool BitMasks, i.e. sMask = (shaderMask.texture+shaderMask.stroke)
@@ -508,7 +481,6 @@
       if (!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
         throw "vertex shader error: "+gl.getShaderInfoLog(this.vs);
       }
-
 
       var shaderProgram = this.shaderProgram = gl.createProgram();
       shaderProgram.stackDepth = transformStackDepth;
@@ -1732,6 +1704,6 @@
     };
   };
 
-  WebGL2D.enable(document.getElementById("canvas"), {force:true});
+  WebGL2D.enable(document.getElementById("canvas"));
 
 }(Math));
