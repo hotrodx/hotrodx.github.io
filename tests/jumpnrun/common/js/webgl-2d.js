@@ -267,6 +267,15 @@
       if (canvas.height < 1) { canvas.height = 1; }
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
+      var retries = 0;
+      if (gl && gl.isContextLost()) {
+        console.log("Context already lost from the onset. Trying to recreate.");
+      }
+
+      while (gl && gl.isContextLost() && retries < 1000) {
+        gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
+        ++retries;
+      }
 
       const iPhone = /iPhone/i.test(navigator.userAgent);
       const iPad = /iPad/i.test(navigator.userAgent);
@@ -279,12 +288,12 @@
 
       var handleContextLost = function(event) {
         event.preventDefault();
-        console.warn("Webgl context lost.");
+        console.log("Webgl context lost.");
         lostContext = true;
       };
     
       var handleContextRestored = function(event) {
-        console.warn("Webgl context restoring...");
+        console.log("Webgl context restoring...");
         if (!canvas.gl2d) { return; }
         if (canvas.width < 1) { canvas.width = 1; }
         if (canvas.height < 1) { canvas.height = 1; }
@@ -311,9 +320,6 @@
         console.warn("Webgl context restored.");
       };
 
-      canvas.addEventListener("webglcontextlost", handleContextLost, false);
-      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
-
       gl2d.initShaders();
       gl2d.initBuffers();
 
@@ -330,6 +336,9 @@
       gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
 
       lostContext = false;
+
+      canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       return gl;
     };
