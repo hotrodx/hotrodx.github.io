@@ -277,6 +277,34 @@
         ++retries;
       }
 
+      if (!gl) {
+        var test = gl2d.canvas.$getContext("2d");
+        if (test) {
+          console.log("canvas was pre-initialized as Canvas2D.");
+          retries = 0;
+          while (!gl && retries < 1000) {
+            var newCanvas = document.createElement("canvas");
+            canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
+            canvas.parentNode.removeChild(canvas);
+            newCanvas.id = "canvas";
+            deCanvas(newCanvas, gl2d);
+            gl = gl2d.gl = newCanvas.$getContext("webgl2") || newCanvas.$getContext("webgl");
+            if (gl) {
+              canvas = gl.canvas;
+            }
+            else {
+              canvas = newCanvas;
+            }
+            ++retries;
+          }
+        }
+      }
+
+      if (!gl) {
+        console.log("Fatal error. Cannot create WebGL.");
+        throw new Error("Fatal error. Cannot create WebGL.");
+      }
+
       const iPhone = /iPhone/i.test(navigator.userAgent);
       const iPad = /iPad/i.test(navigator.userAgent);
       const iOS = iPhone || iPad;
