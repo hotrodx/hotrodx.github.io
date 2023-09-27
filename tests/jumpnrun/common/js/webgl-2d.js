@@ -1124,6 +1124,7 @@
       ];
       transform.translate(0, 0); // force update
 
+      if (gl.isContextLost()) { return; }
       var shaderProgram = gl2d.initShaders(transform.c_stack, 0);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
@@ -1157,6 +1158,7 @@
       ];
       transform.translate(0, 0); // force update
 
+      if (gl.isContextLost()) { return; }
       var shaderProgram = gl2d.initShaders(transform.c_stack, 0);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
@@ -1485,6 +1487,7 @@
       ];
       transform.translate(0, 0); // force update
 
+      if (gl.isContextLost()) { return; }
       var shaderProgram = gl2d.initShaders(transform.c_stack, 0);
 
       var subPath = subPaths[index];
@@ -1526,6 +1529,7 @@
       ];
       transform.translate(0, 0); // force update
 
+      if (gl.isContextLost()) { return; }
       var shaderProgram = gl2d.initShaders(transform.c_stack, 0);
 
       var subPath = subPaths[index];
@@ -1657,6 +1661,7 @@
         doCrop = true;
       }
 
+      if (gl.isContextLost()) { return; }
       var shaderProgram = gl2d.initShaders(transform.c_stack, sMask);
 
       var texture, cacheIndex = imageCache.indexOf(image);
