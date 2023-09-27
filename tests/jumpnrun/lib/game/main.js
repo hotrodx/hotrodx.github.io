@@ -35,6 +35,7 @@ MyGame = ig.Game.extend({
 	heartFull: new ig.Image( 'media/heart-full.png' ),
 	heartEmpty: new ig.Image( 'media/heart-empty.png' ),
 	coinIcon: new ig.Image( 'media/coin.png' ),
+	sky: new ig.Image( "media/sky.jpg" ),
 	
 	
 	init: function() {
@@ -100,6 +101,10 @@ MyGame = ig.Game.extend({
 		this.parent();
 		
 
+		ig.system.context.globalAlpha = 0.5;
+		this.sky.draw(0, 0);
+		ig.system.context.globalAlpha = 1;
+
 		// Draw the heart and number of coins in the upper left corner.
 		// 'this.player' is set by the player's init method
 		if( this.player ) {
@@ -147,6 +152,7 @@ MyTitle = ig.Game.extend({
 
 	// Load a font
 	font: new ig.Font( 'media/fredoka-one.font.png' ),
+	sky: new ig.Image( "media/sky.jpg" ),
 
 	init: function() {
 		// Bind keys
@@ -197,6 +203,11 @@ MyTitle = ig.Game.extend({
 
 	draw: function() {
 		this.parent();
+		
+		ig.system.context.globalAlpha = 0.5;
+		this.sky.draw(0, 0);
+
+		ig.system.context.globalAlpha = 1;
 
 		var cx = ig.system.width/2;
 		this.title.draw( cx - this.title.width/2, 60 );
