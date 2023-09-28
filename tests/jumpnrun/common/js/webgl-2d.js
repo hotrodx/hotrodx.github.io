@@ -267,27 +267,6 @@
       if (canvas.height < 1) { canvas.height = 1; }
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
-      if (gl && gl.isContextLost()) {
-        var retries = 0;
-        console.log("Context already lost from the onset. Trying to recreate.");
-        while (gl && gl.isContextLost() && retries < 1000) {
-          var newCanvas = document.createElement("canvas");
-          canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
-          canvas.parentNode.removeChild(canvas);
-          newCanvas.width = canvas.width;
-          newCanvas.height = canvas.height;
-          newCanvas.id = "canvas";
-          deCanvas(newCanvas, gl2d);
-          gl = gl2d.gl = newCanvas.$getContext("webgl2") || newCanvas.$getContext("webgl");
-          canvas = gl.canvas;
-          ++retries;
-        }
-      }
-
-      if (gl && gl.isContextLost()) {
-        console.log("Could not recreate WebGL.");
-        throw new Error("Could not recreate WebGL.");
-      }
 
       const iPhone = /iPhone/i.test(navigator.userAgent);
       const iPad = /iPad/i.test(navigator.userAgent);
@@ -349,8 +328,8 @@
 
       lostContext = false;
 
-      canvas.addEventListener("webglcontextlost", handleContextLost, false);
-      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+      //canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      //canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       return gl;
     };
