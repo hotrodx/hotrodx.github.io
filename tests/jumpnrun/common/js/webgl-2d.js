@@ -274,13 +274,7 @@
       const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent);
 
       loseContextApi = gl.getExtension("WEBGL_lose_context");
-
-      var handleContextLost = function(event) {
-        event.preventDefault();
-        console.log("Webgl context lost.");
-        lostContext = true;
-      };
-    
+   
       var handleContextRestored = function(event) {
         console.log("Webgl context restoring...");
         if (!canvas.gl2d) { return; }
@@ -307,6 +301,13 @@
         lostContext = false;
 
         console.warn("Webgl context restored.");
+      };
+
+      var handleContextLost = function(event) {
+        event.preventDefault();
+        console.log("Webgl context lost.");
+        lostContext = true;
+        setTimeout(handleContextRestored, 1000);
       };
 
       gl2d.initShaders();
