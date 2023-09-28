@@ -278,7 +278,7 @@
       }
 
       var handleContextLost = function(event) {
-        event.preventDefault();
+        //event.preventDefault();
         console.log("Webgl context lost.");
         lostContext = true;
       };
@@ -328,8 +328,8 @@
 
       lostContext = false;
 
-      //canvas.addEventListener("webglcontextlost", handleContextLost, false);
-      //canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+      canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       return gl;
     };
