@@ -278,6 +278,9 @@
         if (canvas.height < 1) { canvas.height = 1; }
     
         gl2d.shaderPool = [];
+        imageCache = [];
+        textureCache = [];
+
         gl2d.initShaders();
         gl2d.initBuffers();
         if (!gl2d.gl.fillStyle) {
@@ -294,9 +297,7 @@
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-        
-        imageCache = [];
-        textureCache = [];
+
         lostContext = false;
 
         console.warn("Webgl context restored.");
