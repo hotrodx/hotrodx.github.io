@@ -273,12 +273,10 @@
       const iOS = iPhone || iPad;
       const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent);
 
-      if (!iOS) {
-        loseContextApi = gl.getExtension("WEBGL_lose_context");
-      }
+      loseContextApi = gl.getExtension("WEBGL_lose_context");
 
       var handleContextLost = function(event) {
-        //event.preventDefault();
+        event.preventDefault();
         console.log("Webgl context lost.");
         lostContext = true;
       };
