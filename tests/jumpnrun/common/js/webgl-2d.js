@@ -266,15 +266,11 @@
       if (canvas.width < 1) { canvas.width = 1; }
       if (canvas.height < 1) { canvas.height = 1; }
 
-      var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
-
       const iPhone = /iPhone/i.test(navigator.userAgent);
       const iPad = /iPad/i.test(navigator.userAgent);
       const iOS = iPhone || iPad;
       const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent);
-
-      loseContextApi = gl.getExtension("WEBGL_lose_context");
-   
+  
       var handleContextRestored = function(event) {
         console.log("Webgl context restoring...");
         if (!canvas.gl2d) { return; }
@@ -284,6 +280,9 @@
         gl2d.shaderPool = [];
         gl2d.initShaders();
         gl2d.initBuffers();
+        if (!gl2d.gl.fillStyle) {
+          gl2d.gl.initCanvas2DAPI();
+        }
         const {gl} = gl2d;
     
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -307,12 +306,21 @@
         event.preventDefault();
         console.log("Webgl context lost.");
         lostContext = true;
-        setTimeout(handleContextRestored, 1000);
       };
+
+      canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+
+      var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
+
+      if (gl.isContextLost()) {
+        return gl;
+      }
+
+      loseContextApi = gl.getExtension("WEBGL_lose_context");
 
       gl2d.initShaders();
       gl2d.initBuffers();
-
       gl2d.initCanvas2DAPI();
 
       gl.viewport(0, 0, gl2d.canvas.width, gl2d.canvas.height);
@@ -326,9 +334,6 @@
       gl2d.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
 
       lostContext = false;
-
-      canvas.addEventListener("webglcontextlost", handleContextLost, false);
-      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       return gl;
     };
