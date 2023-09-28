@@ -283,9 +283,6 @@
 
         gl2d.initShaders();
         gl2d.initBuffers();
-        if (!gl2d.gl.fillStyle) {
-          gl2d.gl.initCanvas2DAPI();
-        }
         const {gl} = gl2d;
     
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -313,16 +310,21 @@
       canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
+      loseContextApi = gl.getExtension("WEBGL_lose_context");
+      gl2d.initCanvas2DAPI();
 
       if (gl.isContextLost()) {
+
+        WebGL2D._loseContext();
+        setTimeout(() => {
+          WebGL2D._restoreContext();
+        }, 1000);
+        
         return gl;
       }
 
-      loseContextApi = gl.getExtension("WEBGL_lose_context");
-
       gl2d.initShaders();
       gl2d.initBuffers();
-      gl2d.initCanvas2DAPI();
 
       gl.viewport(0, 0, gl2d.canvas.width, gl2d.canvas.height);
       gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
