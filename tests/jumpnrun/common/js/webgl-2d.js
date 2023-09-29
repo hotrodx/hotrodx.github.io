@@ -318,7 +318,7 @@
       };
   
       //document.addEventListener("visibilitychange", handleFocusOut, false);
-      window.addEventListener("blur", handleFocusOut, false);
+      //window.addEventListener("blur", handleFocusOut, false);
       canvas.addEventListener("webglcontextlost", handleContextLost, false);
       canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
