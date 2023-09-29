@@ -297,7 +297,7 @@
 
         lostContext = false;
 
-        console.warn("Webgl context restored.");
+        console.log("Webgl context restored.");
       };
 
       var handleContextLost = function(event) {
@@ -306,19 +306,43 @@
         lostContext = true;
       };
 
-      var handleFocusOut = function(event) {
-        console.log("visibilitychange");
+      var handleBlur = function(event) {
+        console.log("blur");
         if (gl2d.gl) {
           textureCache.forEach(texture => {
             gl2d.gl.deleteTexture(texture.obj);
           });
+          // delete buffers
+          gl2d.gl.deleteBuffer(rectVertexPositionBuffer);
+          gl2d.gl.deleteBuffer(rectVertexColorBuffer);
+          gl2d.gl.deleteBuffer(pathVertexPositionBuffer);
+          gl2d.gl.deleteBuffer(pathVertexColorBuffer);
+          // delete program
+          gl2d.shaderPool.forEach(shaderGroup => {
+            shaderGroup.forEach(program => {
+              gl2d.gl.deleteProgram(program);
+            });
+          });
+          gl2d.gl.deleteProgram(gl2d.shaderProgram);
+          gl2d.gl.deleteShader(gl2d.fs);
+          gl2d.gl.deleteShader(gl2d.vs);
         }
+        gl2d.shaderPool = [];
+        gl2d.shaderProgram = undefined;
+        gl2d.fs = undefined;
+        gl2d.vs = undefined;
         textureCache = [];
         imageCache = [];
+        lostContext = true;
       };
+
+      var handleFocus = function(event) {
+        console.log("focus");
+        handleContextRestored();
+      }
   
-      //document.addEventListener("visibilitychange", handleFocusOut, false);
-      //window.addEventListener("blur", handleFocusOut, false);
+      window.addEventListener("blur", handleBlur, false);
+      window.addEventListener("focus", handleFocus, false);
       canvas.addEventListener("webglcontextlost", handleContextLost, false);
       canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
