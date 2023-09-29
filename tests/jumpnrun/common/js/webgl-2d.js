@@ -306,6 +306,19 @@
         lostContext = true;
       };
 
+      var handleFocusOut = function(event) {
+        console.log("visibilitychange");
+        if (gl2d.gl) {
+          textureCache.forEach(texture => {
+            gl2d.gl.deleteTexture(texture.obj);
+          });
+        }
+        textureCache = [];
+        imageCache = [];
+      };
+  
+      //document.addEventListener("visibilitychange", handleFocusOut, false);
+      window.addEventListener("blur", handleFocusOut, false);
       canvas.addEventListener("webglcontextlost", handleContextLost, false);
       canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
@@ -313,13 +326,7 @@
       loseContextApi = gl.getExtension("WEBGL_lose_context");
       gl2d.initCanvas2DAPI();
 
-      if (gl.isContextLost()) {
-
-        WebGL2D._loseContext();
-        setTimeout(() => {
-          WebGL2D._restoreContext();
-        }, 1000);
-        
+      if (gl.isContextLost()) {       
         return gl;
       }
 
