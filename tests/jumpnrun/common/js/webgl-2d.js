@@ -337,14 +337,15 @@
       };
 
       var handleFocus = function(event) {
+        if (!lostContext) { return; }
         console.log("focus");
         handleContextRestored();
       }
   
       window.addEventListener("blur", handleBlur, false);
       window.addEventListener("focus", handleFocus, false);
-      canvas.addEventListener("webglcontextlost", handleContextLost, false);
-      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+      //canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      //canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
       loseContextApi = gl.getExtension("WEBGL_lose_context");
@@ -1649,6 +1650,8 @@
     gl._dimStrength = 0;
 
     gl.$tempCanvas = document.createElement("canvas");
+
+    gl.drawWindow = function() { };
 
     gl.drawImage = function drawImage(image, a, b, c, d, e, f, g, h) {
       if (lostContext) { return; }
