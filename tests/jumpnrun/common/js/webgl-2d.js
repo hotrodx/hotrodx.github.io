@@ -265,12 +265,7 @@
       if (gl2d.gl) { return gl2d.gl; }
       if (canvas.width < 1) { canvas.width = 1; }
       if (canvas.height < 1) { canvas.height = 1; }
-
-      const iPhone = /iPhone/i.test(navigator.userAgent);
-      const iPad = /iPad/i.test(navigator.userAgent);
-      const iOS = iPhone || iPad;
-      const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent);
-  
+ 
       var handleContextRestored = function(event) {
         console.log("Webgl context restoring...");
         if (!canvas.gl2d) { return; }
@@ -341,11 +336,16 @@
         console.log("focus");
         handleContextRestored();
       }
+
+      const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent) || /iPad;\sCPU\sOS\s17_/i.test(navigator.userAgent);
   
-      window.addEventListener("blur", handleBlur, false);
-      window.addEventListener("focus", handleFocus, false);
-      //canvas.addEventListener("webglcontextlost", handleContextLost, false);
-      //canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
+      if (iOS17) {
+        console.log("iOS17 detected");
+        window.addEventListener("blur", handleBlur, false);
+        window.addEventListener("focus", handleFocus, false);
+      }
+      canvas.addEventListener("webglcontextlost", handleContextLost, false);
+      canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
       loseContextApi = gl.getExtension("WEBGL_lose_context");
