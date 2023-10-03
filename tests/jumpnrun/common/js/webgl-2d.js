@@ -309,9 +309,10 @@
           });
           // delete buffers
           gl2d.gl.deleteBuffer(rectVertexPositionBuffer);
-          gl2d.gl.deleteBuffer(rectVertexColorBuffer);
           gl2d.gl.deleteBuffer(pathVertexPositionBuffer);
-          gl2d.gl.deleteBuffer(pathVertexColorBuffer);
+          rectVertexPositionBuffer = null;
+          pathVertexPositionBuffer = null;
+
           // delete program
           gl2d.shaderPool.forEach(shaderGroup => {
             shaderGroup.forEach(program => {
@@ -323,9 +324,9 @@
           gl2d.gl.deleteShader(gl2d.vs);
         }
         gl2d.shaderPool = [];
-        gl2d.shaderProgram = undefined;
-        gl2d.fs = undefined;
-        gl2d.vs = undefined;
+        gl2d.shaderProgram = null;
+        gl2d.fs = null;
+        gl2d.vs = null;
         textureCache = [];
         imageCache = [];
         lostContext = true;
@@ -376,10 +377,10 @@
 
   var WebGL2D = this.WebGL2D = function WebGL2D(canvas) {
     this.canvas         = canvas;
-    this.gl             = undefined;
-    this.fs             = undefined;
-    this.vs             = undefined;
-    this.shaderProgram  = undefined;
+    this.gl             = null;
+    this.fs             = null;
+    this.vs             = null;
+    this.shaderProgram  = null;
     this.transform      = new Transform();
     this.shaderPool     = [];
     this.maxTextureSize = undefined;
@@ -566,11 +567,8 @@
     return this.shaderProgram;
   };
 
-  var rectVertexPositionBuffer;
-  var rectVertexColorBuffer;
-
-  var pathVertexPositionBuffer;
-  var pathVertexColorBuffer;
+  var rectVertexPositionBuffer = null;
+  var pathVertexPositionBuffer = null;
 
   // 2D Vertices and Texture UV coords
   var rectVerts = new Float32Array([
@@ -590,10 +588,7 @@
     var gl = this.gl;
 
     rectVertexPositionBuffer  = gl.createBuffer();
-    rectVertexColorBuffer     = gl.createBuffer();
-
     pathVertexPositionBuffer  = gl.createBuffer();
-    pathVertexColorBuffer     = gl.createBuffer();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, rectVerts, gl.STATIC_DRAW);
