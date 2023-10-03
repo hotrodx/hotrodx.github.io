@@ -409,13 +409,6 @@
     path: 4
   };
 
-  var _stackDepth = 0;
-  var _vertexPositionAttribute = null;
-  var _uColor = null;
-  var _uSampler = null;
-  var _uCropSource = null;
-  var _pMatrix = null;
-  var _uTransforms = [];
 
   // Fragment shader source
   WebGL2D.prototype.getFragmentShaderSource = function getFragmentShaderSource(sMask) {
@@ -530,7 +523,7 @@
       }
 
       var shaderProgram = this.shaderProgram = gl.createProgram();
-      _stackDepth = transformStackDepth;
+      shaderProgram.stackDepth = transformStackDepth;
       gl.attachShader(shaderProgram, fs);
       gl.attachShader(shaderProgram, vs);
       gl.linkProgram(shaderProgram);
@@ -541,17 +534,17 @@
 
       gl.useProgram(shaderProgram);
 
-      _vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-      gl.enableVertexAttribArray(_vertexPositionAttribute);
+      shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+      gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-      _uColor   = gl.getUniformLocation(shaderProgram, 'uColor');
-      _uSampler = gl.getUniformLocation(shaderProgram, 'uSampler');
-      _uCropSource = gl.getUniformLocation(shaderProgram, 'uCropSource');
-      _pMatrix = gl.getUniformLocation(shaderProgram, 'pMatrix');
+      shaderProgram.uColor   = gl.getUniformLocation(shaderProgram, 'uColor');
+      shaderProgram.uSampler = gl.getUniformLocation(shaderProgram, 'uSampler');
+      shaderProgram.uCropSource = gl.getUniformLocation(shaderProgram, 'uCropSource');
+      shaderProgram.pMatrix = gl.getUniformLocation(shaderProgram, 'pMatrix');
 
-      _uTransforms = [];
+      shaderProgram.uTransforms = [];
       for (var i=0; i<transformStackDepth; ++i) {
-        _uTransforms[i] = gl.getUniformLocation(shaderProgram, 'uTransforms[' + i + ']');
+        shaderProgram.uTransforms[i] = gl.getUniformLocation(shaderProgram, 'uTransforms[' + i + ']');
       } //for
       this.shaderPool[transformStackDepth][sMask] = shaderProgram;
     } //if
@@ -559,7 +552,7 @@
     pMatrix[0] = 2 / this.canvas.width;
     pMatrix[5] = -2 / this.canvas.height;
 
-    gl.uniformMatrix4fv(_pMatrix, false, pMatrix);
+    gl.uniformMatrix4fv(this.shaderProgram.pMatrix, false, pMatrix);
 
     gl.viewport(0, 0, this.canvas.$width, this.canvas.$height);
 
@@ -1138,7 +1131,7 @@
     function sendTransformStack(sp) {
       var stack = gl2d.transform.m_stack;
       for (var i = 0, maxI = gl2d.transform.c_stack + 1; i < maxI; ++i) {
-        gl.uniformMatrix3fv(_uTransforms[i], false, stack[maxI-1-i]);
+        gl.uniformMatrix3fv(sp.uTransforms[i], false, stack[maxI-1-i]);
       } //for
     }
 
@@ -1169,15 +1162,15 @@
       var shaderProgram = gl2d.initShaders(transform.c_stack, 0);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-      gl.enableVertexAttribArray(_vertexPositionAttribute);
-      gl.vertexAttribPointer(_vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
       transform.translate(x, y);
       transform.scale(width, height);
 
       sendTransformStack(shaderProgram);
 
-      gl.uniform4f(_uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]);
+      gl.uniform4f(shaderProgram.uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.fillStyle[3]);
 
       gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
@@ -1203,15 +1196,15 @@
       var shaderProgram = gl2d.initShaders(transform.c_stack, 0);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-      gl.enableVertexAttribArray(_vertexPositionAttribute);
-      gl.vertexAttribPointer(_vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
       transform.translate(x, y);
       transform.scale(width, height);
 
       sendTransformStack(shaderProgram);
 
-      gl.uniform4f(_uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]);
+      gl.uniform4f(shaderProgram.uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.strokeStyle[3]);
 
       gl.drawArrays(gl.LINE_LOOP, 0, 4);
 
@@ -1537,12 +1530,12 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, pathVertexPositionBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-      gl.enableVertexAttribArray(_vertexPositionAttribute);
-      gl.vertexAttribPointer(_vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
       sendTransformStack(shaderProgram);
 
-      gl.uniform4f(_uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.globalAlpha);
+      gl.uniform4f(shaderProgram.uColor, drawState.fillStyle[0], drawState.fillStyle[1], drawState.fillStyle[2], drawState.globalAlpha);
 
       gl.drawArrays(gl.TRIANGLE_FAN, 0, verts.length/4);
 
@@ -1579,12 +1572,12 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, pathVertexPositionBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-      gl.enableVertexAttribArray(_vertexPositionAttribute);
-      gl.vertexAttribPointer(_vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
       sendTransformStack(shaderProgram);
 
-      gl.uniform4f(_uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.globalAlpha);
+      gl.uniform4f(shaderProgram.uColor, drawState.strokeStyle[0], drawState.strokeStyle[1], drawState.strokeStyle[2], drawState.globalAlpha);
 
       if (subPath.closed) {
         gl.drawArrays(gl.LINE_LOOP, 0, verts.length/4);
@@ -1729,21 +1722,21 @@
       }
 
       if (doCrop) {
-        gl.uniform4f(_uCropSource, a/image.width, b/image.height, c/image.width, d/image.height);
+        gl.uniform4f(shaderProgram.uCropSource, a/image.width, b/image.height, c/image.width, d/image.height);
       }
 
       const dim = 1 - Math.min(1, Math.max(0, gl._dimStrength));
 
-      gl.uniform4f(_uColor, dim, dim, dim, drawState.globalAlpha);
+      gl.uniform4f(shaderProgram.uColor, dim, dim, dim, drawState.globalAlpha);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, rectVertexPositionBuffer);
-      gl.enableVertexAttribArray(_vertexPositionAttribute);
-      gl.vertexAttribPointer(_vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, gl.FLOAT, false, 0, 0);
 
       gl.bindTexture(gl.TEXTURE_2D, texture.obj);
       gl.activeTexture(gl.TEXTURE0);
 
-      gl.uniform1i(_uSampler, 0);
+      gl.uniform1i(shaderProgram.uSampler, 0);
 
       sendTransformStack(shaderProgram);
       gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
