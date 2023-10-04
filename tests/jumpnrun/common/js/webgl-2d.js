@@ -349,7 +349,7 @@
         console.log("iOS17 detected");
         if (loseContextApi) {
           window.addEventListener("blur", () => { loseContextApi.loseContext(); }, false);
-          window.addEventListener("focus", () => { loseContextApi.restoreContext(); }, false);
+          window.addEventListener("focus", () => { setTimeout(() => { loseContextApi.restoreContext(); }, 2000); }, false);
         }
       }
       gl2d.initCanvas2DAPI();
