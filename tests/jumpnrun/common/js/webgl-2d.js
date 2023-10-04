@@ -340,16 +340,18 @@
 
       const iOS17 = /iPhone\sOS\s17_/i.test(navigator.userAgent) || /iPad;\sCPU\sOS\s17_/i.test(navigator.userAgent);
   
-      if (iOS17) {
-        console.log("iOS17 detected");
-        window.addEventListener("blur", handleBlur, false);
-        window.addEventListener("focus", handleFocus, false);
-      }
       canvas.addEventListener("webglcontextlost", handleContextLost, false);
       canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
 
       var gl = gl2d.gl = gl2d.canvas.$getContext("webgl2") || gl2d.canvas.$getContext("webgl");
       loseContextApi = gl.getExtension("WEBGL_lose_context");
+      if (iOS17) {
+        console.log("iOS17 detected");
+        if (loseContextApi) {
+          window.addEventListener("blur", () => { loseContextApi.loseContext(); }, false);
+          window.addEventListener("focus", () => { loseContextApi.restoreContext(); }, false);
+        }
+      }
       gl2d.initCanvas2DAPI();
 
       if (gl.isContextLost()) {       
