@@ -1,0 +1,7 @@
+{
+	"name": "@blueprintgaming/fullscreen",
+	"version": "37.0.0-6bd6367",
+	"main": "fullscreen.js",
+	"types": "types/index.d.ts",
+	"module": "fullscreen.js"
+}
