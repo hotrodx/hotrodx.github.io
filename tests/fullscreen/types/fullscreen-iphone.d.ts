@@ -5,6 +5,7 @@ export declare class FullscreenIphone implements Fullscreen {
     constructor();
     private addElement;
     private addEventListeners;
+    private handleOrientationChange;
     private handleTouchStart;
     private handleTouchEnd;
     isFullscreen(): boolean;
