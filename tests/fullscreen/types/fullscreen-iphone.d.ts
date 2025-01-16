@@ -1,11 +1,8 @@
 import { Fullscreen } from './fullscreen';
 export declare class FullscreenIphone implements Fullscreen {
     private touchStartY;
-    private dvhValue;
-    private vhValue;
-    private diff;
+    private innerHeight;
     private div;
-    private divScreen;
     private id?;
     constructor();
     private getHeightValue;
