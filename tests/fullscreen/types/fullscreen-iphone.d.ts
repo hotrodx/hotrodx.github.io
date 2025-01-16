@@ -5,6 +5,7 @@ export declare class FullscreenIphone implements Fullscreen {
     private vhValue;
     private diff;
     private div;
+    private divScreen;
     private id?;
     constructor();
     private getHeightValue;
