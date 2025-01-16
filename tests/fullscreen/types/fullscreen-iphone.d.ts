@@ -15,6 +15,7 @@ export declare class FullscreenIphone implements Fullscreen {
     private undoFullscreen;
     private handleOrientationChange;
     private handleTouchStart;
+    private restartInterval;
     private handleTouchEnd;
     isFullscreen(): boolean;
 }
