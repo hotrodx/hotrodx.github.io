@@ -2,6 +2,7 @@ import { Fullscreen } from './fullscreen';
 export declare class FullscreenIphoneChrome implements Fullscreen {
     private touchStartY;
     private vhValue;
+    private dvhValue;
     private div;
     private id?;
     constructor();
