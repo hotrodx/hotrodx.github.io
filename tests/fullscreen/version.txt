@@ -1,2 +1,2 @@
 @blueprintgaming/fullscreen@37.0.0-50613db
-Build date: Thu Jan 23 2025 16:20:06 GMT+0800 (Philippine Standard Time)
+Build date: Thu Jan 23 2025 16:31:24 GMT+0800 (Philippine Standard Time)
