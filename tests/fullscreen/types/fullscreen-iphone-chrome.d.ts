@@ -9,6 +9,7 @@ export declare class FullscreenIphoneChrome implements Fullscreen {
     private handleOrientationChange;
     private handleTouchStart;
     private handleTouchEnd;
+    private handleTouchCancel;
     private getHeightValue;
     isFullscreen(): boolean;
 }
