@@ -5,6 +5,7 @@ export declare class FullscreenIphoneChrome implements Fullscreen {
     private id?;
     constructor();
     private addElement;
+    private checkFullscreen;
     private addEventListeners;
     private handleOrientationChange;
     private handleTouchStart;
